@@ -1,0 +1,77 @@
+-- ═══════════════════════════════════════════════
+-- ANURADHA TEXTILE FMS — SUPABASE SCHEMA
+-- Run this ONCE in your Supabase SQL Editor
+-- ═══════════════════════════════════════════════
+
+-- Purchase Orders table
+CREATE TABLE IF NOT EXISTS pos (
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  type        TEXT NOT NULL CHECK (type IN ('COLOR','CHEMICAL')),
+  po_no       TEXT NOT NULL,
+  vendor      TEXT NOT NULL,
+  total_qty   INTEGER NOT NULL,
+  lead_days   INTEGER NOT NULL,
+  entry_date  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  entry_by    TEXT NOT NULL,
+  status      TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','cancelled')),
+  planned     JSONB NOT NULL DEFAULT '{}',
+  steps       JSONB NOT NULL DEFAULT '{}',
+  receivings  JSONB NOT NULL DEFAULT '[]',
+  cancelled_qty INTEGER NOT NULL DEFAULT 0,
+  cancel_remark TEXT NOT NULL DEFAULT '',
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Vendors table
+CREATE TABLE IF NOT EXISTS vendors (
+  id    SERIAL PRIMARY KEY,
+  type  TEXT NOT NULL CHECK (type IN ('COLOR','CHEMICAL')),
+  name  TEXT NOT NULL,
+  UNIQUE(type, name)
+);
+
+-- Insert default vendors
+INSERT INTO vendors (type, name) VALUES
+  ('COLOR','RKP CHEMICALS'),
+  ('COLOR','UNIVERSAL'),
+  ('COLOR','PRERAK DYES & CHEMICALS CO.'),
+  ('COLOR','RAM RATAN & CO.'),
+  ('COLOR','MADHAV INTERNATIONAL'),
+  ('CHEMICAL','RKP CHEMICALS'),
+  ('CHEMICAL','UNIVERSAL AGENCY'),
+  ('CHEMICAL','SARAL DYE'),
+  ('CHEMICAL','PRERAK DYE'),
+  ('CHEMICAL','PYREX'),
+  ('CHEMICAL','RAM RATAN'),
+  ('CHEMICAL','JAI GURUDAV TRADING'),
+  ('CHEMICAL','CHEMICAL DISTRIBUTOR'),
+  ('CHEMICAL','BRIJ PRODUCT'),
+  ('CHEMICAL','R.S.R.O WATER SOLUTION'),
+  ('CHEMICAL','DWARKA DAS JAGANNATH'),
+  ('CHEMICAL','BLUE TEX PVT LTD'),
+  ('CHEMICAL','KESHAV INDUSTRIES'),
+  ('CHEMICAL','ASSOCIATED TRADERS'),
+  ('CHEMICAL','AQUATECH ENGINEERS'),
+  ('CHEMICAL','AGRAWAL GUM MANUFACTURING CO. PVT. LTD.'),
+  ('CHEMICAL','SHREE PANCHRATNA'),
+  ('CHEMICAL','MADHAV INTERNATIONAL'),
+  ('CHEMICAL','HIREN FABRIC'),
+  ('CHEMICAL','DIVYA ART'),
+  ('CHEMICAL','SHIVA ORGANICS'),
+  ('CHEMICAL','ISCON CHEMICALS'),
+  ('CHEMICAL','HARI HAR SHARAN & SONS'),
+  ('CHEMICAL','PRAKASH CHEMICALS'),
+  ('CHEMICAL','KHANDELWAL ORGOSOL PVT LTD'),
+  ('CHEMICAL','SHILPA DYEING & PRINTING MILLS'),
+  ('CHEMICAL','EVEREST FAB'),
+  ('CHEMICAL','DHANKOTHARI SALES'),
+  ('CHEMICAL','PARUL SILK MILK'),
+  ('CHEMICAL','STARLIT ENTERPRISES')
+ON CONFLICT (type, name) DO NOTHING;
+
+-- Enable Row Level Security (open access via service key from API)
+ALTER TABLE pos     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vendors ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "allow_all_pos"     ON pos     FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "allow_all_vendors" ON vendors FOR ALL USING (true) WITH CHECK (true);
