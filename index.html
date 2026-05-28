@@ -833,8 +833,8 @@ async function showApp(){
   var u=USERS[S.user];
   document.getElementById('user-chip').textContent=u.name+' · '+(u.role==='admin'?'Admin':'Doer');
   if(u.role==='admin')document.getElementById('nav-admin').classList.remove('hidden');
-  document.getElementById('tab-color').className='type-tab'+(S.fmsType==='COLOR'?' active':'');
-  document.getElementById('tab-chemical').className='type-tab'+(S.fmsType==='CHEMICAL'?' active':'');
+  document.getElementById('tab-color').className='type-btn'+(S.fmsType==='COLOR'?' active':'');
+  document.getElementById('tab-chemical').className='type-btn'+(S.fmsType==='CHEMICAL'?' active':'');
   await loadData(false);
   startAutoSync();
 }
@@ -844,8 +844,8 @@ async function showApp(){
 // ══════════════════════════════════════════════════════════════
 async function switchType(t){
   S.fmsType=t;saveLocal();
-  document.getElementById('tab-color').className='type-tab'+(t==='COLOR'?' active':'');
-  document.getElementById('tab-chemical').className='type-tab'+(t==='CHEMICAL'?' active':'');
+  document.getElementById('tab-color').className='type-btn'+(t==='COLOR'?' active':'');
+  document.getElementById('tab-chemical').className='type-btn'+(t==='CHEMICAL'?' active':'');
   await loadData(false);
   startAutoSync();
 }
