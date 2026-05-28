@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Anuradha Textile — FMS</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f6fb;--bg2:#ffffff;--bg3:#f0f3f9;--bg4:#e4e9f4;
+  --border:#dde3f0;--shadow:0 2px 12px rgba(60,80,140,.08);
+  --text:#1a1e2e;--text2:#4a5270;--text3:#8892b0;
+  --blue:#3b5bdb;--blue2:#2f4ac2;--blue-dim:#e8edff;--blue-mid:#c5d0ff;
+  --green:#2f9e44;--green-dim:#ebfbee;--green-mid:#b2f2bb;
+  --amber:#e67700;--amber-dim:#fff3bf;--amber-mid:#ffe066;
+  --red:#c92a2a;--red-dim:#fff5f5;--red-mid:#ffc9c9;
+  --purple:#6741d9;--purple-dim:#f3f0ff;
+  --accent:#3b5bdb;
+  --r:10px;--rlg:16px;
+}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+button{font-family:inherit;cursor:pointer;border:none;outline:none}
+input,select,textarea{font-family:inherit;outline:none}
+.hidden{display:none!important}
+a{color:var(--blue);text-decoration:none}
+
+/* ── LOGIN ── */
+#login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;
+  background:linear-gradient(135deg,#e8edff 0%,#f4f6fb 50%,#ebfbee 100%)}
+.login-card{background:var(--bg2);border:1px solid var(--border);border-radius:24px;
+  padding:40px 36px;width:100%;max-width:400px;box-shadow:0 8px 40px rgba(60,80,180,.13)}
+.login-brand{display:flex;flex-direction:column;align-items:center;margin-bottom:28px;gap:8px}
+.login-logo-img{width:72px;height:72px;object-fit:contain;border-radius:50%;
+  border:2px solid var(--border);padding:4px;background:#fff}
+.login-brand-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.login-brand-sub{font-size:12px;color:var(--text3)}
+.user-cards{display:flex;flex-direction:column;gap:8px}
+.user-card{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);
+  border:1.5px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s}
+.user-card:hover{border-color:var(--blue);background:var(--blue-dim);transform:translateY(-1px);box-shadow:var(--shadow)}
+.user-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.user-card-info{flex:1}
+.user-card-name{font-size:13px;font-weight:600;color:var(--text)}
+.user-card-role{font-size:11px;color:var(--text3)}
+.pin-screen{display:flex;flex-direction:column;align-items:center}
+.pin-who{font-size:16px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.pin-sub{font-size:12px;color:var(--text3);margin-bottom:20px}
+.pin-dots{display:flex;gap:10px;margin-bottom:20px}
+.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--border);transition:all .2s}
+.pin-dot.filled{background:var(--blue);transform:scale(1.15)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:240px}
+.pin-key{background:var(--bg3);border:1.5px solid var(--border);color:var(--text);
+  padding:15px;border-radius:10px;font-size:20px;font-weight:600;transition:all .1s;text-align:center}
+.pin-key:hover{background:var(--blue-dim);border-color:var(--blue)}
+.pin-key:active{transform:scale(.92)}
+.pin-err{font-size:12px;color:var(--red);min-height:18px;margin-top:8px;text-align:center}
+.pin-back{background:transparent;color:var(--text3);font-size:13px;margin-top:12px;
+  padding:6px 14px;border-radius:8px;border:1px solid var(--border)}
+.pin-back:hover{color:var(--text);background:var(--bg3)}
+
+/* ── APP LAYOUT ── */
+#app-page{display:flex;flex-direction:column;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+  background:var(--bg2);border-bottom:1.5px solid var(--border);
+  position:sticky;top:0;z-index:99;height:56px;flex-wrap:wrap;gap:8px;
+  box-shadow:0 2px 8px rgba(60,80,140,.06)}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.topbar-logo{width:34px;height:34px;object-fit:contain;border-radius:50%;border:1px solid var(--border)}
+.topbar-title{font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.2px}
+.topbar-title span{color:var(--blue)}
+.type-tabs{display:flex;gap:3px;background:var(--bg3);padding:3px;border-radius:8px;border:1px solid var(--border)}
+.type-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;
+  border:none;background:transparent;color:var(--text2);transition:all .15s}
+.type-tab.active{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,91,219,.3)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.user-pill{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2);
+  background:var(--bg3);padding:5px 12px;border-radius:20px;border:1px solid var(--border)}
+.user-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.sync-indicator{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s ease-in-out infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.btn-logout{font-size:12px;color:var(--text3);background:transparent;
+  padding:5px 10px;border-radius:8px;border:1px solid var(--border)}
+.btn-logout:hover{color:var(--red);border-color:var(--red)}
+
+/* ── NAV ── */
+.nav{display:flex;gap:2px;padding:8px 20px;background:var(--bg2);
+  border-bottom:1px solid var(--border);overflow-x:auto}
+.nav-btn{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:500;
+  background:transparent;color:var(--text2);border:none;white-space:nowrap;transition:all .15s}
+.nav-btn.active{background:var(--blue-dim);color:var(--blue);font-weight:600}
+.nav-btn:hover:not(.active){background:var(--bg3);color:var(--text)}
+
+/* ── CONTENT ── */
+.content{padding:20px;max-width:1100px;margin:0 auto;width:100%}
+
+/* ── STATS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);
+  padding:14px 16px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.07em;margin-bottom:5px}
+.stat-val{font-size:26px;font-weight:700;line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rlg);
+  padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-title{font-size:13px;font-weight:600;margin-bottom:12px;color:var(--text)}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;gap:3px}
+.b-blue{background:var(--blue-dim);color:var(--blue)}
+.b-green{background:var(--green-dim);color:var(--green)}
+.b-amber{background:var(--amber-dim);color:var(--amber)}
+.b-red{background:var(--red-dim);color:var(--red)}
+.b-purple{background:var(--purple-dim);color:var(--purple)}
+.b-gray{background:var(--bg4);color:var(--text2)}
+
+/* ── PO CARD ── */
+.po-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--rlg);
+  margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow);transition:border-color .15s}
+.po-card:hover{border-color:var(--blue-mid)}
+.po-header{display:flex;align-items:flex-start;justify-content:space-between;
+  padding:14px 16px;cursor:pointer;gap:8px;transition:background .15s}
+.po-header:hover{background:var(--bg3)}
+.po-num{font-size:15px;font-weight:700;font-family:monospace;color:var(--text)}
+.po-meta{font-size:11px;color:var(--text3);margin-top:4px;display:flex;flex-wrap:wrap;gap:8px}
+.po-meta span{display:flex;align-items:center;gap:3px}
+.po-body{padding:14px 16px;border-top:1.5px solid var(--border);background:var(--bg)}
+.chevron{color:var(--text3);font-size:16px;transition:transform .2s;flex-shrink:0;margin-top:4px}
+.chevron.open{transform:rotate(180deg)}
+
+/* ── STEPS ── */
+.step-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:6px;
+  transition:border-color .15s}
+.step-row:hover{border-color:var(--blue-mid)}
+.step-dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.dot-done{background:var(--green-dim);color:var(--green);border:1.5px solid var(--green-mid)}
+.dot-late{background:var(--red-dim);color:var(--red);border:1.5px solid var(--red-mid)}
+.dot-pending{background:var(--bg4);color:var(--text3);border:1.5px solid var(--border)}
+.step-name{font-size:13px;font-weight:600;color:var(--text)}
+.step-dates{font-size:11px;color:var(--text3);margin-top:2px;display:flex;flex-wrap:wrap;gap:6px}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+  border:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.btn-primary{background:var(--blue);color:#fff;box-shadow:0 2px 6px rgba(59,91,219,.25)}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-success{background:var(--green-dim);color:var(--green);border:1.5px solid var(--green-mid)}
+.btn-success:hover{background:var(--green-mid)}
+.btn-danger{background:var(--red-dim);color:var(--red);border:1.5px solid var(--red-mid)}
+.btn-danger:hover{background:var(--red-mid)}
+.btn-ghost{background:var(--bg3);color:var(--text2);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--bg4);color:var(--text)}
+.btn-amber{background:var(--amber-dim);color:var(--amber);border:1.5px solid var(--amber-mid)}
+.btn-amber:hover{background:var(--amber-mid)}
+.btn-sm{padding:4px 10px;font-size:11px}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(30,40,80,.45);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;z-index:200;padding:14px}
+.modal{background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 60px rgba(30,40,80,.18)}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-ttl{font-size:15px;font-weight:700;color:var(--text)}
+.modal-cls{background:transparent;color:var(--text3);font-size:22px;line-height:1;padding:2px 6px;border-radius:6px}
+.modal-cls:hover{background:var(--bg3);color:var(--text)}
+.modal-body{padding:20px}
+.modal-ftr{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── FORM ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+.lbl{font-size:12px;color:var(--text2);font-weight:600}
+.inp{width:100%;background:var(--bg3);border:1.5px solid var(--border);color:var(--text);
+  padding:10px 12px;border-radius:8px;font-size:14px;transition:border .15s}
+.inp:focus{border-color:var(--blue);background:#fff}
+select.inp{appearance:none;cursor:pointer}
+
+/* ── ALERTS ── */
+.alert{padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:10px;
+  display:flex;align-items:flex-start;gap:8px}
+.alert-warn{background:var(--amber-dim);border:1.5px solid var(--amber-mid);color:var(--amber)}
+.alert-danger{background:var(--red-dim);border:1.5px solid var(--red-mid);color:var(--red)}
+.alert-info{background:var(--blue-dim);border:1.5px solid var(--blue-mid);color:var(--blue)}
+.alert-success{background:var(--green-dim);border:1.5px solid var(--green-mid);color:var(--green)}
+
+/* ── CHECKLIST ── */
+.cl-item{display:flex;align-items:flex-start;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid var(--border);gap:8px}
+.cl-q-en{font-size:12px;font-weight:500;color:var(--text)}
+.cl-q-hi{font-size:11px;color:var(--text3);margin-top:1px}
+.cl-btns{display:flex;gap:6px;flex-shrink:0}
+.cl-btn{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;
+  border:1.5px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.cl-btn.yes.active{background:var(--green-dim);border-color:var(--green-mid);color:var(--green)}
+.cl-btn.no.active{background:var(--red-dim);border-color:var(--red-mid);color:var(--red)}
+
+/* ── FILE UPLOAD ── */
+.file-area{border:2px dashed var(--border);border-radius:10px;padding:18px;
+  text-align:center;cursor:pointer;color:var(--text3);font-size:12px;display:block;transition:all .15s}
+.file-area:hover{border-color:var(--blue);background:var(--blue-dim)}
+.file-area.done{border-color:var(--green);background:var(--green-dim);color:var(--green)}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 12px;color:var(--text3);font-size:10px;
+  text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);font-weight:700}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3)}
+
+/* ── MISC ── */
+.flex{display:flex;align-items:center}.gap6{gap:6px}.gap8{gap:8px}.gap10{gap:10px}
+.ml-a{margin-left:auto}.mt8{margin-top:8px}.mt12{margin-top:12px}
+.search{background:var(--bg2);border:1.5px solid var(--border);color:var(--text);
+  padding:9px 14px;border-radius:10px;font-size:13px;width:100%;transition:border .15s}
+.search:focus{border-color:var(--blue);outline:none;background:#fff}
+.empty{text-align:center;padding:48px;color:var(--text3)}
+.empty-icon{font-size:40px;margin-bottom:10px}
+.partial-bar{height:5px;background:var(--bg4);border-radius:3px;margin-top:5px;overflow:hidden}
+.partial-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+.tabs{display:flex;gap:2px;border-bottom:1.5px solid var(--border);margin-bottom:14px}
+.tab{padding:8px 16px;font-size:13px;font-weight:500;color:var(--text3);
+  background:transparent;border:none;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.score-bad{color:var(--red);font-weight:700;font-family:monospace}
+.score-zero{color:var(--text2);font-family:monospace}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);
+  border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-bar{display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:48px;color:var(--text3);font-size:13px}
+.section-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.08em;margin-bottom:8px;margin-top:4px}
+.divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr}
+  .content{padding:12px}
+  .topbar{padding:0 12px}
+  .topbar-title{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-brand">
+      <img class="login-logo-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wgARCADzANADASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAQFAgMGAf/EABcBAQEBAQAAAAAAAAAAAAAAAAACAwH/2gAMAwEAAhADEAAAAr8AAAABT1B17kr0sAAAAAAAAAAMcq4oc4egtNlPLO0RJYAAAAAAAAA5Lq+dI6uxLNWZlz0fP356AAAAAAAB57RFfWgAAs6wd97Q3wAAAAAABr4jo+YAAAAM+34XpC7AAAAAABytVJjABPuDmHUVRWAWVbtO6AAAAAA898OEwzwF3X9megAoud7/AJIrQd97jkAAAAAAcTGtKs6e4jyAABX2HhwOfkw7EAAAAAAFLzXc8Qd3lhHJaunmTGAWKJLOJtarrSSAAAAAABzPTaDCVUW55okCPuyDHKOUfSYZgAAAAAAAFfYa64tY+/mp0vZPMdK7kKyAAAAAAAAGg38t1PJnUbKm2AAAAAAAAAAHNdLHKKmtpRJtfPQAAAAAAARiSrJpuaMzY1YEhF3mavjlwjbDa0ZmxSTia0ZG1Ejlmq55tatoqLeOVe+w1EXKXpIcjduK6FaZmNfO2kbKXrIdvBnFXjPEDRZZmqJP1kHOd6RLSNJAAAAAAAAAAAAAP//aAAwDAQACAAMAAAAh888880w88888888888YA8888888888g4kw88888888oAAAQ88888888oAAAAw8888888AAIAAE8888888AYc8IAU888888Ic884I8888888o4w0wA8888888scM8sU88888888YHO8888888888oEc8888888888c88888888448ww0w8w88w0sUsEUcccQwIUU8888888888888/9oADAMBAAIAAwAAABAAAAAAggAAAAAAAAABRhAAAAAAAAAAAhiQAAAAAAAAASAABAAAAAAAABAAAADAAAAAAACgAgQAQAAAAABSgwAAQCgAAAAAChgjCwgAAAAAAAhTjjSwAAAAAAAT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" alt="Anuradha Textile"/>
+      <div class="login-brand-name">Anuradha Textile</div>
+      <div class="login-brand-sub">Purchase Order Management System</div>
+    </div>
+    <div id="login-step1">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:500">Select your profile</div>
+      <div class="user-cards" id="user-cards"></div>
+    </div>
+    <div id="login-step2" class="hidden pin-screen">
+      <div class="pin-who" id="login-who"></div>
+      <div class="pin-sub">Enter your 4-digit PIN</div>
+      <div class="pin-dots" id="pin-dots"></div>
+      <div class="pin-pad" id="pin-pad"></div>
+      <div class="pin-err" id="pin-error"></div>
+      <button class="pin-back" onclick="backToUsers()">← Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="app-page" class="hidden">
+  <div class="topbar">
+    <div class="topbar-brand">
+      <img class="topbar-logo" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wgARCADzANADASIAAhEBAxEB/8QAGgABAAIDAQAAAAAAAAAAAAAAAAQFAgMGAf/EABcBAQEBAQAAAAAAAAAAAAAAAAACAwH/2gAMAwEAAhADEAAAAr8AAAABT1B17kr0sAAAAAAAAAAMcq4oc4egtNlPLO0RJYAAAAAAAAA5Lq+dI6uxLNWZlz0fP356AAAAAAAB57RFfWgAAs6wd97Q3wAAAAAABr4jo+YAAAAM+34XpC7AAAAAABytVJjABPuDmHUVRWAWVbtO6AAAAAA898OEwzwF3X9megAoud7/AJIrQd97jkAAAAAAcTGtKs6e4jyAABX2HhwOfkw7EAAAAAAFLzXc8Qd3lhHJaunmTGAWKJLOJtarrSSAAAAAABzPTaDCVUW55okCPuyDHKOUfSYZgAAAAAAAFfYa64tY+/mp0vZPMdK7kKyAAAAAAAAGg38t1PJnUbKm2AAAAAAAAAAHNdLHKKmtpRJtfPQAAAAAAARiSrJpuaMzY1YEhF3mavjlwjbDa0ZmxSTia0ZG1Ejlmq55tatoqLeOVe+w1EXKXpIcjduK6FaZmNfO2kbKXrIdvBnFXjPEDRZZmqJP1kHOd6RLSNJAAAAAAAAAAAAAP//aAAwDAQACAAMAAAAh888880w88888888888YA8888888888g4kw88888888oAAAQ88888888oAAAAw8888888AAIAAE8888888AYc8IAU888888Ic884I8888888o4w0wA8888888scM8sU88888888YHO8888888888oEc8888888888c88888888448ww0w8w88w0sUsEUcccQwIUU8888888888888/9oADAMBAAIAAwAAABAAAAAAggAAAAAAAAABRhAAAAAAAAAAAhiQAAAAAAAAASAABAAAAAAAABAAAADAAAAAAACgAgQAQAAAAABSgwAAQCgAAAAAChgjCwgAAAAAAAhTjjSwAAAAAAAT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" alt="logo"/>
+      <span class="topbar-title">Anuradha <span>Textile</span></span>
+      <div class="type-tabs">
+        <button class="type-tab active" id="tab-color" onclick="switchType('COLOR')">🎨 Color</button>
+        <button class="type-tab" id="tab-chemical" onclick="switchType('CHEMICAL')">⚗️ Chemical</button>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="sync-indicator" id="sync-indicator">
+        <div class="sync-dot" id="sync-dot"></div>
+        <span id="sync-text">Synced</span>
+      </div>
+      <div class="user-pill"><div class="user-dot"></div><span id="user-chip"></span></div>
+      <button class="btn-logout" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" id="nav-dash"  onclick="showPage('dash')">📋 PO Dashboard</button>
+    <button class="nav-btn"        id="nav-mis"   onclick="showPage('mis')">📊 MIS Report</button>
+    <button class="nav-btn hidden" id="nav-admin" onclick="showPage('admin')">⚙️ Admin</button>
+  </div>
+  <div class="content" id="main-content">
+    <div class="loading-bar"><div class="spinner"></div> Loading...</div>
+  </div>
+</div>
+<div id="modal-root"></div>
+<div id="toast-root" style="position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px"></div>
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════════════
+var API='';
+var SYNC_INTERVAL=15000; // auto-sync every 15 seconds
+
+var PINS={abhishek:'1234',ajay:'2345',narendra:'3456',mehul:'4567'};
+var USERS={
+  abhishek:{name:'Abhishek',role:'doer', steps:['1','3'],color:['#dbeafe','#1d4ed8']},
+  ajay:    {name:'Ajay',    role:'doer', steps:['2','5','6'],color:['#dcfce7','#166534']},
+  narendra:{name:'Narendra',role:'admin',steps:[],color:['#f3f0ff','#5b21b6']},
+  mehul:   {name:'Mehul',   role:'admin',steps:[],color:['#fff3bf','#92400e']}
+};
+var STEPS=[
+  {code:'1',label:'Issue PO',                doer:'abhishek',how:'Phone & Email',    scored:true},
+  {code:'2',label:'Follow up with Supplier', doer:'ajay',    how:'Phone & WhatsApp', scored:true},
+  {code:'3',label:'Material Receiving',      doer:'abhishek',how:'Physical Check',   scored:false},
+  {code:'5',label:'Store Material & Daybook',doer:'ajay',    how:'Checklist ST-1',   scored:true},
+  {code:'6',label:'Accounts Process',        doer:'ajay',    how:'Checklist PAC-1',  scored:true}
+];
+var CHECKLIST=[
+  {id:'q1',en:'Correct PO number on bill?',         hi:'क्या सही पीओ संख्या बिल पर है?'},
+  {id:'q2',en:'Bill received?',                     hi:'क्या बिल प्राप्त हुआ?'},
+  {id:'q3',en:'Price mentioned on bill?',           hi:'क्या बिल में प्राइस मेंशन है?'},
+  {id:'q4',en:'Quantity & quality matched with PO?',hi:'क्या पीओ के साथ मात्रा और गुणवत्ता का मिलान किया?'},
+  {id:'q5',en:'Packaging checked (no damage)?',     hi:'क्या पैकिंग की जाँच करी कटी फटी तो नहीं है?'},
+  {id:'q6',en:'Receiving given?',                   hi:'क्या रिसीविंग दे दी?'},
+  {id:'q7',en:'PO qty and bill qty match?',         hi:'क्या पीओ की और बिल की मात्रा बराबर है या नहीं?'}
+];
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+var S={user:null,fmsType:'COLOR',page:'dash',pos:[],vendors:[],
+       dashFilter:'active',dashSearch:'',adminTab:'vendors',syncTimer:null};
+
+function saveLocal(){try{localStorage.setItem('fms_u',S.user||'');localStorage.setItem('fms_t',S.fmsType);}catch(e){}}
+function loadLocal(){try{S.user=localStorage.getItem('fms_u')||null;S.fmsType=localStorage.getItem('fms_t')||'COLOR';}catch(e){}}
+
+// ══════════════════════════════════════════════════════════════
+// API
+// ══════════════════════════════════════════════════════════════
+function apiFetch(method,url,body){
+  setSyncing(true);
+  var opts={method:method,headers:{'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  return fetch(API+url,opts)
+    .then(function(r){setSyncing(false);if(!r.ok)throw new Error(r.status);return r.json();})
+    .catch(function(e){setSyncError();throw e;});
+}
+function apiGet(u){return apiFetch('GET',u);}
+function apiPost(u,b){return apiFetch('POST',u,b);}
+function apiPatch(u,b){return apiFetch('PATCH',u,b);}
+function apiDelete(u,b){return apiFetch('DELETE',u,b);}
+
+// Map DB row to frontend PO object
+function mapPO(r){
+  return{
+    id:r.id,type:r.type,poNo:r.po_no,vendor:r.vendor,
+    totalQty:r.total_qty,leadDays:r.lead_days,
+    entryDate:r.entry_date,entryBy:r.entry_by,
+    status:r.status,planned:r.planned||{},
+    steps:r.steps||{},receivings:r.receivings||[],
+    cancelledQty:r.cancelled_qty||0,cancelRemark:r.cancel_remark||''
+  };
+}
+
+async function loadData(silent){
+  try{
+    var[rows,vendors]=await Promise.all([
+      apiGet('/api/pos?type='+S.fmsType),
+      apiGet('/api/vendors?type='+S.fmsType)
+    ]);
+    S.pos=rows.map(mapPO);
+    S.vendors=vendors;
+    if(!silent)render();
+    else renderSilent();
+    setSynced();
+  }catch(e){setSyncError();}
+}
+
+// ══════════════════════════════════════════════════════════════
+// SYNC INDICATOR
+// ══════════════════════════════════════════════════════════════
+function setSyncing(v){
+  var dot=document.getElementById('sync-dot');
+  var txt=document.getElementById('sync-text');
+  if(dot)dot.className='sync-dot'+(v?' syncing':'');
+  if(txt)txt.textContent=v?'Syncing...':'Synced';
+}
+function setSynced(){
+  var dot=document.getElementById('sync-dot');
+  var txt=document.getElementById('sync-text');
+  if(dot)dot.className='sync-dot';
+  if(txt)txt.textContent='Synced '+new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+}
+function setSyncError(){
+  var dot=document.getElementById('sync-dot');
+  var txt=document.getElementById('sync-text');
+  if(dot)dot.className='sync-dot error';
+  if(txt)txt.textContent='Sync failed';
+}
+
+// Silent auto-sync — updates data without blanking the screen
+async function autoSync(){
+  try{
+    var[rows,vendors]=await Promise.all([
+      fetch(API+'/api/pos?type='+S.fmsType).then(r=>r.json()),
+      fetch(API+'/api/vendors?type='+S.fmsType).then(r=>r.json())
+    ]);
+    S.pos=rows.map(mapPO);
+    S.vendors=vendors;
+    setSynced();
+    renderSilent();
+  }catch(e){setSyncError();}
+}
+
+// renderSilent: re-renders only the PO cards without touching filters/search inputs
+function renderSilent(){
+  if(S.page==='dash'){
+    var list=document.getElementById('po-list');
+    if(list){list.innerHTML=buildPOList();}
+    updateStats();
+  }
+}
+
+function startAutoSync(){
+  if(S.syncTimer)clearInterval(S.syncTimer);
+  S.syncTimer=setInterval(autoSync,SYNC_INTERVAL);
+}
+function stopAutoSync(){
+  if(S.syncTimer){clearInterval(S.syncTimer);S.syncTimer=null;}
+}
+
+// ══════════════════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════════════════
+function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function setHM(d,h,m){var r=new Date(d);r.setHours(h,m,0,0);return r;}
+function calcPlanned(entryDate,leadDays){
+  var po=new Date(entryDate),del=addDays(po,leadDays);
+  return{'1':setHM(po,18,0).toISOString(),'2':setHM(addDays(del,-2),9,0).toISOString(),
+    '3':setHM(del,9,0).toISOString(),'5':null,'6':null};
+}
+function calcPostRcv(rcvDate){
+  return{'5':setHM(new Date(rcvDate),21,0).toISOString(),
+    '6':setHM(addDays(new Date(rcvDate),1),20,0).toISOString()};
+}
+var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmt(iso){
+  if(!iso)return'—';
+  var d=new Date(iso),h=d.getHours(),ampm=h>=12?'PM':'AM',hh=h%12||12,mm=String(d.getMinutes()).padStart(2,'0');
+  return d.getDate()+' '+MONTHS[d.getMonth()]+' '+hh+':'+mm+' '+ampm;
+}
+function fmtDate(iso){
+  if(!iso)return'—';
+  var d=new Date(iso);return d.getDate()+' '+MONTHS[d.getMonth()]+' '+d.getFullYear();
+}
+function isLate(pl,actual){
+  if(!pl)return false;
+  return(actual?new Date(actual):new Date())>new Date(pl);
+}
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════
+function toast(msg,type){
+  var el=document.createElement('div');
+  var colors={success:['#dcfce7','#166534','#b2f2bb'],
+    danger:['#fff5f5','#c92a2a','#ffc9c9'],
+    info:['#e8edff','#3b5bdb','#c5d0ff']};
+  var c=colors[type]||colors.info;
+  el.style.cssText='background:'+c[0]+';color:'+c[1]+';border:1.5px solid '+c[2]+
+    ';padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;'+
+    'box-shadow:0 4px 16px rgba(0,0,0,.1);max-width:280px;animation:slideIn .2s ease';
+  el.textContent=msg;
+  var root=document.getElementById('toast-root');
+  if(root){root.appendChild(el);setTimeout(function(){el.remove();},3000);}
+}
+// add slide-in animation
+var styleEl=document.createElement('style');
+styleEl.textContent='@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}';
+document.head.appendChild(styleEl);
+
+// ══════════════════════════════════════════════════════════════
+// AUTH — PIN
+// ══════════════════════════════════════════════════════════════
+var _pinUser=null,_pinEntered='';
+
+function buildUserCards(){
+  var html='';
+  Object.keys(USERS).forEach(function(uid){
+    var u=USERS[uid],c=u.color;
+    html+='<div class="user-card" onclick="selectUser(\''+uid+'\')">'
+      +'<div class="user-avatar" style="background:'+c[0]+';color:'+c[1]+'">'+u.name.charAt(0)+'</div>'
+      +'<div class="user-card-info"><div class="user-card-name">'+u.name+'</div>'
+      +'<div class="user-card-role">'+(u.role==='admin'?'👑 Admin':'⚡ Doer')+'</div></div>'
+      +'<span style="color:var(--text3);font-size:18px">›</span></div>';
+  });
+  var el=document.getElementById('user-cards');
+  if(el)el.innerHTML=html;
+}
+function selectUser(uid){
+  _pinUser=uid;_pinEntered='';
+  document.getElementById('login-step1').classList.add('hidden');
+  document.getElementById('login-step2').classList.remove('hidden');
+  document.getElementById('login-who').textContent=USERS[uid].name;
+  document.getElementById('pin-error').textContent='';
+  buildPinPad();updatePinDots();
+}
+function backToUsers(){
+  _pinUser=null;_pinEntered='';
+  document.getElementById('login-step2').classList.add('hidden');
+  document.getElementById('login-step1').classList.remove('hidden');
+  document.getElementById('pin-error').textContent='';
+}
+function buildPinPad(){
+  var dots='';for(var i=0;i<4;i++)dots+='<div class="pin-dot" id="pd-'+i+'"></div>';
+  document.getElementById('pin-dots').innerHTML=dots;
+  var keys=['1','2','3','4','5','6','7','8','9','','0','⌫'],html='';
+  keys.forEach(function(k){
+    html+=k===''?'<div></div>':'<button class="pin-key" onclick="pinPress(\''+k+'\')">'+k+'</button>';
+  });
+  document.getElementById('pin-pad').innerHTML=html;
+}
+function updatePinDots(){
+  for(var i=0;i<4;i++){var el=document.getElementById('pd-'+i);if(el)el.className='pin-dot'+(i<_pinEntered.length?' filled':'');}
+}
+function pinPress(k){
+  document.getElementById('pin-error').textContent='';
+  if(k==='⌫'){_pinEntered=_pinEntered.slice(0,-1);updatePinDots();return;}
+  if(_pinEntered.length>=4)return;
+  _pinEntered+=k;updatePinDots();
+  if(_pinEntered.length===4)setTimeout(checkPin,100);
+}
+function checkPin(){
+  if(_pinEntered===PINS[_pinUser]){S.user=_pinUser;saveLocal();showApp();}
+  else{document.getElementById('pin-error').textContent='❌ Incorrect PIN. Try again.';_pinEntered='';updatePinDots();}
+}
+function doLogout(){
+  stopAutoSync();S.user=null;saveLocal();_pinUser=null;_pinEntered='';
+  document.getElementById('app-page').classList.add('hidden');
+  document.getElementById('login-step2').classList.add('hidden');
+  document.getElementById('login-step1').classList.remove('hidden');
+  document.getElementById('login-page').classList.remove('hidden');
+}
+async function showApp(){
+  document.getElementById('login-page').classList.add('hidden');
+  document.getElementById('app-page').classList.remove('hidden');
+  var u=USERS[S.user];
+  document.getElementById('user-chip').textContent=u.name+' · '+(u.role==='admin'?'Admin':'Doer');
+  if(u.role==='admin')document.getElementById('nav-admin').classList.remove('hidden');
+  document.getElementById('tab-color').className='type-tab'+(S.fmsType==='COLOR'?' active':'');
+  document.getElementById('tab-chemical').className='type-tab'+(S.fmsType==='CHEMICAL'?' active':'');
+  await loadData(false);
+  startAutoSync();
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════════
+async function switchType(t){
+  S.fmsType=t;saveLocal();
+  document.getElementById('tab-color').className='type-tab'+(t==='COLOR'?' active':'');
+  document.getElementById('tab-chemical').className='type-tab'+(t==='CHEMICAL'?' active':'');
+  await loadData(false);
+  startAutoSync();
+}
+async function showPage(p){
+  S.page=p;
+  ['dash','mis','admin'].forEach(function(x){
+    var el=document.getElementById('nav-'+x);
+    if(el)el.className='nav-btn'+(x===p?' active':'')+(x==='admin'&&USERS[S.user].role!=='admin'?' hidden':'');
+  });
+  await loadData(false);
+}
+function render(){
+  var c=document.getElementById('main-content');
+  if(S.page==='dash')renderDash(c);
+  else if(S.page==='mis')renderMIS(c);
+  else if(S.page==='admin')renderAdmin(c);
+}
+
+// ══════════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════════
+function updateStats(){
+  var myPending=0,overdue=0;
+  S.pos.forEach(function(p){
+    if(p.status==='cancelled')return;
+    STEPS.forEach(function(sd){
+      var step=p.steps[sd.code];
+      if(step&&step.done)return;
+      if(USERS[S.user].steps.indexOf(sd.code)>=0)myPending++;
+      if(isLate(p.planned[sd.code],null))overdue++;
+    });
+  });
+  var el1=document.getElementById('stat-total');
+  var el2=document.getElementById('stat-pending');
+  var el3=document.getElementById('stat-overdue');
+  if(el1)el1.textContent=S.pos.length;
+  if(el2){el2.textContent=myPending;el2.style.color=myPending?'var(--amber)':'var(--green)';}
+  if(el3){el3.textContent=overdue;el3.style.color=overdue?'var(--red)':'var(--green)';}
+}
+
+function buildPOList(){
+  var filtered=S.pos.filter(function(p){
+    if(S.dashFilter==='active'){
+      if(p.status==='cancelled')return false;
+      if(STEPS.every(function(sd){return p.steps[sd.code]&&p.steps[sd.code].done;}))return false;
+    }
+    if(S.dashFilter==='complete'){
+      if(p.status==='cancelled')return false;
+      if(!STEPS.every(function(sd){return p.steps[sd.code]&&p.steps[sd.code].done;}))return false;
+    }
+    if(S.dashFilter==='cancelled'&&p.status!=='cancelled')return false;
+    var q=S.dashSearch.toLowerCase();
+    return!q||String(p.poNo).toLowerCase().includes(q)||p.vendor.toLowerCase().includes(q);
+  });
+  if(!filtered.length)return'<div class="empty"><div class="empty-icon">📋</div>No purchase orders found</div>';
+  return filtered.map(renderPOCard).join('');
+}
+
+function renderDash(c){
+  var html='<div class="stats-row">'
+    +'<div class="stat-card"><div class="stat-lbl">Total POs</div><div class="stat-val" id="stat-total">—</div><div class="stat-sub">This year</div></div>'
+    +'<div class="stat-card"><div class="stat-lbl">My Pending Steps</div><div class="stat-val" id="stat-pending">—</div><div class="stat-sub">Awaiting action</div></div>'
+    +'<div class="stat-card"><div class="stat-lbl">Overdue Steps</div><div class="stat-val" id="stat-overdue">—</div><div class="stat-sub">Past planned date</div></div>'
+    +'</div>'
+    +'<div class="flex gap8" style="margin-bottom:12px;flex-wrap:wrap">'
+    +'<div class="tabs" style="margin-bottom:0;border-bottom:none">'
+    +['active','complete','all','cancelled'].map(function(f){
+      var label={active:'🔵 Active',complete:'✅ Complete',all:'📁 All',cancelled:'❌ Cancelled'}[f];
+      return'<button class="tab'+(S.dashFilter===f?' active':'')+'" onclick="setDashFilter(\''+f+'\')">'+label+'</button>';
+    }).join('')+'</div>'
+    +'<input class="search" style="flex:1;min-width:160px" placeholder="🔍 Search PO number or vendor..." value="'+esc(S.dashSearch)+'" oninput="setDashSearch(this.value)"/>'
+    +(S.user==='abhishek'?'<button class="btn btn-primary" onclick="openPOForm()">+ New PO</button>':'')
+    +'</div>'
+    +'<div id="po-list">'+buildPOList()+'</div>';
+  c.innerHTML=html;
+  updateStats();
+}
+
+function setDashFilter(f){S.dashFilter=f;render();}
+function setDashSearch(v){S.dashSearch=v;render();}
+
+// ══════════════════════════════════════════════════════════════
+// PO CARD
+// ══════════════════════════════════════════════════════════════
+function renderPOCard(p){
+  var rcvd=(p.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+  var cq=p.cancelledQty||0;
+  var pct=Math.min(100,Math.round(rcvd/p.totalQty*100));
+  var done=STEPS.filter(function(sd){return p.steps[sd.code]&&p.steps[sd.code].done;}).length;
+  var total=STEPS.length;
+  var stBadge=p.status==='cancelled'?'<span class="badge b-red">❌ Cancelled</span>'
+    :done===total?'<span class="badge b-green">✅ Complete</span>'
+    :done===0?'<span class="badge b-gray">⏳ Not Started</span>'
+    :'<span class="badge b-amber">Step '+done+'/'+total+'</span>';
+  var rcvdTxt=rcvd+(cq>0?'<span style="color:var(--red);font-size:10px"> (+'+cq+' cancelled)</span>':'');
+
+  return'<div class="po-card">'
+    +'<div class="po-header" onclick="togglePO(\''+p.id+'\')">'
+    +'<div style="flex:1;min-width:0">'
+    +'<div class="flex gap6" style="flex-wrap:wrap">'
+    +'<span class="po-num">PO #'+esc(p.poNo)+'</span>'
+    +'<span class="badge '+(p.type==='COLOR'?'b-blue':'b-purple')+'">'+(p.type==='COLOR'?'🎨':'⚗️')+' '+p.type+'</span>'
+    +stBadge+'</div>'
+    +'<div class="po-meta">'
+    +'<span>🏢 '+esc(p.vendor)+'</span>'
+    +'<span>📦 '+rcvdTxt+'/'+p.totalQty+'</span>'
+    +'<span>📅 '+fmtDate(p.entryDate)+'</span>'
+    +'<span>⏳ '+p.leadDays+'d lead</span>'
+    +'</div>'
+    +(pct>0&&pct<100?'<div class="partial-bar"><div class="partial-fill" style="width:'+pct+'%"></div></div>':'')
+    +'</div>'
+    +'<div class="chevron" id="chv-'+p.id+'">▼</div>'
+    +'</div>'
+    +'<div class="po-body hidden" id="pob-'+p.id+'">'+renderPOBody(p)+'</div>'
+    +'</div>';
+}
+
+function renderPOBody(p){
+  var u=USERS[S.user],isAdmin=u.role==='admin';
+  var rcvd=(p.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+  var cq=p.cancelledQty||0;
+  var html='';
+  if(p.status==='cancelled')html+='<div class="alert alert-danger">❌ Cancelled: '+esc(p.cancelRemark||'No reason given')+'</div>';
+  if(cq>0&&p.status!=='cancelled')html+='<div class="alert alert-warn">⚠️ '+cq+' units cancelled — not expected.</div>';
+
+  STEPS.forEach(function(sd){
+    var step=p.steps[sd.code]||{done:false};
+    var pl=p.planned[sd.code];
+    var late=!step.done&&isLate(pl,null);
+    var dotCls=step.done?'dot-done':late?'dot-late':'dot-pending';
+    var prereqMet=true,prereqMsg='';
+    if(sd.code==='2'&&!(p.steps['1']&&p.steps['1'].done)){prereqMet=false;prereqMsg='Waiting: Issue PO must be done first';}
+    if((sd.code==='5'||sd.code==='6')&&!(p.steps['3']&&p.steps['3'].done)){prereqMet=false;prereqMsg='Waiting: Material Receiving must be done first';}
+    var canDo=u.steps.indexOf(sd.code)>=0&&!step.done&&p.status!=='cancelled'&&prereqMet;
+    var canUndo=isAdmin&&step.done&&p.status!=='cancelled';
+    html+='<div class="step-row">'
+      +'<div class="step-dot '+dotCls+'">'+(step.done?'✓':sd.code)+'</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="step-name">'+sd.label+'</div>'
+      +'<div class="step-dates">'
+      +'<span>📅 '+fmt(pl)+'</span>'
+      +(step.done?'<span style="color:'+(isLate(pl,step.actualDate)?'var(--red)':'var(--green)')+'">✓ Done: '+fmt(step.actualDate)+'</span>':'')
+      +(late?'<span style="color:var(--red)">⚠ Overdue</span>':'')
+      +(!step.done&&!prereqMet&&u.steps.indexOf(sd.code)>=0?'<span style="color:var(--text3);font-size:10px">🔒 '+prereqMsg+'</span>':'')
+      +'</div>'
+      +(step.remarks?'<div style="font-size:11px;color:var(--text3);margin-top:2px">💬 '+esc(step.remarks)+'</div>':'')
+      +'</div>'
+      +'<div style="display:flex;gap:5px;flex-shrink:0">'
+      +(canDo?'<button class="btn btn-success btn-sm" onclick="openMarkDone(\''+p.id+'\',\''+sd.code+'\')">✓ Mark Done</button>':'')
+      +(canUndo?'<button class="btn btn-amber btn-sm" onclick="undoMarkDone(\''+p.id+'\',\''+sd.code+'\')">↩ Undo</button>':'')
+      +'</div></div>';
+  });
+
+  if((p.receivings||[]).length){
+    html+='<hr class="divider"/><div class="section-title">Receiving History</div>';
+    p.receivings.forEach(function(r){
+      html+='<div class="step-row" style="flex-direction:column;gap:4px">'
+        +'<div class="flex gap8"><span class="badge b-green">+'+r.qty+' units</span>'
+        +'<span style="font-size:11px;color:var(--text3)">'+fmt(r.date)+'</span>'
+        +(r.invoiceImg?'<a href="'+r.invoiceImg+'" target="_blank" style="font-size:11px">📷 View Invoice</a>':'')
+        +'</div>'
+        +(r.remarks?'<div style="font-size:11px;color:var(--text3)">'+esc(r.remarks)+'</div>':'')
+        +'</div>';
+    });
+  }
+
+  if(p.status!=='cancelled'){
+    html+='<hr class="divider"/><div class="flex gap6" style="flex-wrap:wrap">';
+    html+='<button class="btn btn-danger btn-sm" onclick="openCancel(\''+p.id+'\')">✕ Cancel PO</button>';
+    var remaining=p.totalQty-rcvd-cq;
+    if(remaining>0)html+='<button class="btn btn-amber btn-sm" onclick="openPartialCancel(\''+p.id+'\')">📦 Cancel Remaining Qty</button>';
+    if(isAdmin)html+='<button class="btn btn-ghost btn-sm" onclick="openEditPO(\''+p.id+'\')">✏️ Edit PO</button>';
+    html+='</div>';
+  }
+  if(isAdmin)html+='<div class="mt8"><button class="btn btn-danger btn-sm" onclick="deletePO(\''+p.id+'\')" style="opacity:.6">🗑 Delete PO</button></div>';
+  return html;
+}
+
+function togglePO(id){
+  var b=document.getElementById('pob-'+id);
+  var c=document.getElementById('chv-'+id);
+  if(b){b.classList.toggle('hidden');if(c)c.className='chevron'+(b.classList.contains('hidden')?'':' open');}
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODAL
+// ══════════════════════════════════════════════════════════════
+function showModal(title,body,footer){
+  document.getElementById('modal-root').innerHTML=
+    '<div class="overlay" onclick="if(event.target===this)closeModal()">'
+    +'<div class="modal">'
+    +'<div class="modal-hdr"><span class="modal-ttl">'+title+'</span>'
+    +'<button class="modal-cls" onclick="closeModal()">×</button></div>'
+    +'<div class="modal-body">'+body+'</div>'
+    +(footer?'<div class="modal-ftr">'+footer+'</div>':'')
+    +'</div></div>';
+}
+function closeModal(){document.getElementById('modal-root').innerHTML='';}
+
+// ══════════════════════════════════════════════════════════════
+// NEW PO
+// ══════════════════════════════════════════════════════════════
+function openPOForm(){
+  var vOpts=S.vendors.map(function(v){return'<option value="'+esc(v)+'">'+esc(v)+'</option>';}).join('');
+  showModal('📋 New Purchase Order',
+    '<div class="form-row"><div class="form-group"><label class="lbl">PO Number</label>'
+    +'<input class="inp" id="f-pono" placeholder="e.g. 114"/></div>'
+    +'<div class="form-group"><label class="lbl">Vendor</label>'
+    +'<select class="inp" id="f-vendor"><option value="">Select vendor</option>'+vOpts+'</select></div></div>'
+    +'<div class="form-row"><div class="form-group"><label class="lbl">Total Qty Ordered</label>'
+    +'<input class="inp" type="number" id="f-qty" placeholder="e.g. 500"/></div>'
+    +'<div class="form-group"><label class="lbl">Lead Time (days)</label>'
+    +'<input class="inp" type="number" id="f-lead" placeholder="e.g. 7, 10, 15" oninput="updDel(this.value)"/></div></div>'
+    +'<div class="alert alert-info" id="f-del">Enter lead time to see expected delivery date</div>',
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-primary" onclick="submitPO()">Create PO</button>'
+  );
+}
+function updDel(v){
+  var el=document.getElementById('f-del');
+  if(el)el.textContent=parseInt(v)>0?'📅 Expected delivery: '+fmtDate(addDays(new Date(),parseInt(v)).toISOString()):'Enter lead time to see expected delivery date';
+}
+async function submitPO(){
+  var poNo=(document.getElementById('f-pono')||{}).value||'';
+  var vendor=(document.getElementById('f-vendor')||{}).value||'';
+  var qty=parseInt((document.getElementById('f-qty')||{}).value||'0');
+  var lead=parseInt((document.getElementById('f-lead')||{}).value||'0');
+  if(!poNo.trim()||!vendor||!qty||!lead){toast('All fields are required','danger');return;}
+  var now=new Date().toISOString();
+  var planned=calcPlanned(now,lead);
+  var steps={};
+  STEPS.forEach(function(sd){steps[sd.code]={done:false,actualDate:null,remarks:'',checklistAnswers:{}};});
+  try{
+    await apiPost('/api/pos',{type:S.fmsType,poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,
+      entryDate:now,entryBy:S.user,planned,steps,receivings:[],cancelledQty:0,cancelRemark:''});
+    closeModal();toast('PO created successfully','success');
+    await loadData(false);
+  }catch(e){toast('Error creating PO','danger');}
+}
+
+// ══════════════════════════════════════════════════════════════
+// MARK DONE
+// ══════════════════════════════════════════════════════════════
+var _md={};
+function openMarkDone(poId,stepCode){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var sd=STEPS.find(function(s){return s.code===stepCode;});
+  _md={poId,stepCode,checklist:{},invoiceImg:null,invoiceFile:''};
+  var isRcv=stepCode==='3',isStore=stepCode==='5';
+  var rcvdSoFar=(po.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+  var body='';
+  if(isRcv){
+    body+='<div class="form-group"><label class="lbl">Quantity Received</label>'
+      +'<div class="alert alert-info" style="margin-bottom:8px">📦 Ordered: '+po.totalQty+' &nbsp;|&nbsp; Received so far: '+rcvdSoFar+'</div>'
+      +'<input class="inp" type="number" id="md-qty" placeholder="Enter qty for this delivery"/></div>'
+      +'<div class="form-group"><label class="lbl">Invoice Photo (mandatory)</label>'
+      +'<label class="file-area" id="md-file-lbl" for="md-file-inp">📷 Tap to upload invoice photo</label>'
+      +'<input type="file" id="md-file-inp" accept="image/*" capture="environment" style="display:none" onchange="handleFile(this)"/>'
+      +'</div>';
+  }
+  if(isStore){
+    body+='<div class="section-title" style="margin-bottom:10px">Store & Daybook Checklist (ST-1)</div>';
+    CHECKLIST.forEach(function(q){
+      body+='<div class="cl-item"><div><div class="cl-q-en">'+q.en+'</div><div class="cl-q-hi">'+q.hi+'</div></div>'
+        +'<div class="cl-btns">'
+        +'<button class="cl-btn yes" id="cl-y-'+q.id+'" onclick="setCheck(\''+q.id+'\',\'yes\')">✓ हाँ</button>'
+        +'<button class="cl-btn no" id="cl-n-'+q.id+'" onclick="setCheck(\''+q.id+'\',\'no\')">✗ नहीं</button>'
+        +'</div></div>';
+    });
+    body+='<div style="margin-top:8px"></div>';
+  }
+  body+='<div class="form-group"><label class="lbl">Remarks (optional)</label>'
+    +'<textarea class="inp" id="md-remarks" rows="2" placeholder="Any notes..."></textarea></div>';
+  showModal('✅ Mark Done — '+sd.label,body,
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-success" onclick="submitMarkDone()">✓ Confirm Done</button>'
+  );
+}
+function setCheck(qid,val){
+  _md.checklist[qid]=val;
+  var ye=document.getElementById('cl-y-'+qid),no=document.getElementById('cl-n-'+qid);
+  if(ye)ye.className='cl-btn yes'+(val==='yes'?' active':'');
+  if(no)no.className='cl-btn no'+(val==='no'?' active':'');
+}
+function handleFile(inp){
+  var f=inp.files[0];if(!f)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    _md.invoiceImg=e.target.result;_md.invoiceFile=f.name;
+    var l=document.getElementById('md-file-lbl');
+    if(l){l.className='file-area done';l.textContent='✓ '+f.name;}
+  };
+  reader.readAsDataURL(f);
+}
+async function submitMarkDone(){
+  var po=S.pos.find(function(p){return p.id===_md.poId;});if(!po)return;
+  var sc=_md.stepCode,isRcv=sc==='3',isStore=sc==='5';
+  var remarks=(document.getElementById('md-remarks')||{}).value||'';
+  var now=new Date().toISOString();
+  var updated=JSON.parse(JSON.stringify(po));
+  if(isRcv){
+    var qty=parseInt((document.getElementById('md-qty')||{}).value||'0');
+    if(!qty||qty<=0){toast('Enter received quantity','danger');return;}
+    if(!_md.invoiceImg){toast('Invoice photo is mandatory','danger');return;}
+    var rcvdSoFar=(po.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+    updated.receivings.push({qty,date:now,invoiceImg:_md.invoiceImg,invoiceFile:_md.invoiceFile,remarks});
+    if(rcvdSoFar+qty>=po.totalQty){
+      updated.steps['3']={done:true,actualDate:now,remarks,checklistAnswers:{}};
+      var pd=calcPostRcv(now);updated.planned['5']=pd['5'];updated.planned['6']=pd['6'];
+    }
+  }else{
+    if(isStore&&Object.keys(_md.checklist).length<CHECKLIST.length){toast('Please answer all checklist questions','danger');return;}
+    updated.steps[sc]={done:true,actualDate:now,remarks,checklistAnswers:isStore?_md.checklist:{}};
+  }
+  try{
+    await apiPatch('/api/pos/'+po.id,{steps:updated.steps,planned:updated.planned,receivings:updated.receivings});
+    closeModal();toast('Step marked as done ✓','success');
+    await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+// ══════════════════════════════════════════════════════════════
+// CANCEL / PARTIAL CANCEL / EDIT / DELETE / UNDO
+// ══════════════════════════════════════════════════════════════
+function openCancel(poId){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  showModal('❌ Cancel Purchase Order',
+    '<div class="alert alert-warn">⚠️ This will cancel PO #'+esc(po.poNo)+'. Record will be kept.</div>'
+    +'<div class="form-group"><label class="lbl">Reason for cancellation</label>'
+    +'<textarea class="inp" id="cancel-remark" rows="3" placeholder="Enter reason..."></textarea></div>',
+    '<button class="btn btn-ghost" onclick="closeModal()">Back</button>'
+    +'<button class="btn btn-danger" onclick="confirmCancel(\''+poId+'\')">Confirm Cancel</button>'
+  );
+}
+async function confirmCancel(poId){
+  var remark=(document.getElementById('cancel-remark')||{}).value||'';
+  try{
+    await apiPatch('/api/pos/'+poId,{status:'cancelled',cancelRemark:remark});
+    closeModal();toast('PO cancelled','success');await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+function openPartialCancel(poId){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var rcvd=(po.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+  var remaining=po.totalQty-rcvd-(po.cancelledQty||0);
+  showModal('📦 Cancel Remaining Quantity',
+    '<div class="alert alert-info">PO #'+esc(po.poNo)+' — Ordered: '+po.totalQty+' | Received: '+rcvd+' | Remaining: '+remaining+'</div>'
+    +'<div class="form-group"><label class="lbl">Quantity to cancel (max '+remaining+')</label>'
+    +'<input class="inp" type="number" id="cq-qty" max="'+remaining+'" placeholder="'+remaining+'"/></div>'
+    +'<div class="form-group"><label class="lbl">Reason</label>'
+    +'<textarea class="inp" id="cq-reason" rows="2" placeholder="Why is this qty not coming?"></textarea></div>',
+    '<button class="btn btn-ghost" onclick="closeModal()">Back</button>'
+    +'<button class="btn btn-danger" onclick="confirmPartialCancel(\''+poId+'\','+remaining+')">Confirm</button>'
+  );
+}
+async function confirmPartialCancel(poId,maxQty){
+  var qty=parseInt((document.getElementById('cq-qty')||{}).value||'0');
+  var reason=(document.getElementById('cq-reason')||{}).value||'';
+  if(!qty||qty<=0||qty>maxQty){toast('Enter a valid quantity (1 to '+maxQty+')','danger');return;}
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var newCQ=(po.cancelledQty||0)+qty;
+  var rcvd=(po.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+  var update={cancelledQty:newCQ};
+  if(rcvd+newCQ>=po.totalQty&&!(po.steps['3']&&po.steps['3'].done)){
+    var now=new Date().toISOString();
+    var newSteps=JSON.parse(JSON.stringify(po.steps));
+    newSteps['3']={done:true,actualDate:now,remarks:qty+' units cancelled: '+reason,checklistAnswers:{}};
+    var pd=calcPostRcv(now);
+    update.steps=newSteps;
+    update.planned={...po.planned,'5':pd['5'],'6':pd['6']};
+  }
+  try{
+    await apiPatch('/api/pos/'+poId,update);
+    closeModal();toast(qty+' units marked as cancelled','success');await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+function openEditPO(poId){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var vOpts=S.vendors.map(function(v){return'<option value="'+esc(v)+'"'+(v===po.vendor?' selected':'')+'>'+esc(v)+'</option>';}).join('');
+  showModal('✏️ Edit PO #'+esc(po.poNo),
+    '<div class="form-row"><div class="form-group"><label class="lbl">PO Number</label>'
+    +'<input class="inp" id="ep-pono" value="'+esc(po.poNo)+'"/></div>'
+    +'<div class="form-group"><label class="lbl">Vendor</label>'
+    +'<select class="inp" id="ep-vendor">'+vOpts+'</select></div></div>'
+    +'<div class="form-row"><div class="form-group"><label class="lbl">Total Qty Ordered</label>'
+    +'<input class="inp" type="number" id="ep-qty" value="'+po.totalQty+'"/></div>'
+    +'<div class="form-group"><label class="lbl">Lead Time (days)</label>'
+    +'<input class="inp" type="number" id="ep-lead" value="'+po.leadDays+'"/></div></div>',
+    '<button class="btn btn-ghost" onclick="closeModal()">Cancel</button>'
+    +'<button class="btn btn-primary" onclick="submitEditPO(\''+poId+'\')">Save Changes</button>'
+  );
+}
+async function submitEditPO(poId){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var poNo=(document.getElementById('ep-pono')||{}).value||'';
+  var vendor=(document.getElementById('ep-vendor')||{}).value||'';
+  var qty=parseInt((document.getElementById('ep-qty')||{}).value||'0');
+  var lead=parseInt((document.getElementById('ep-lead')||{}).value||'0');
+  if(!poNo.trim()||!vendor||!qty||!lead){toast('All fields are required','danger');return;}
+  var planned=lead!==po.leadDays?calcPlanned(po.entryDate,lead):po.planned;
+  try{
+    await apiPatch('/api/pos/'+poId,{poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,planned});
+    closeModal();toast('PO updated','success');await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+async function deletePO(poId){
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  if(!confirm('Permanently DELETE PO #'+po.poNo+'? This cannot be undone.'))return;
+  try{
+    await apiDelete('/api/pos/'+poId);
+    toast('PO deleted','success');await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+async function undoMarkDone(poId,stepCode){
+  if(!confirm('Remove "Mark Done" for this step? It will go back to pending.'))return;
+  var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
+  var newSteps=JSON.parse(JSON.stringify(po.steps));
+  newSteps[stepCode]={done:false,actualDate:null,remarks:'',checklistAnswers:{}};
+  var newPlanned={...po.planned};
+  if(stepCode==='3'){newPlanned['5']=null;newPlanned['6']=null;}
+  try{
+    await apiPatch('/api/pos/'+poId,{steps:newSteps,planned:newPlanned});
+    toast('Step reset to pending','success');await loadData(false);
+  }catch(e){toast('Error — check connection','danger');}
+}
+
+// ══════════════════════════════════════════════════════════════
+// MIS
+// ══════════════════════════════════════════════════════════════
+function renderMIS(c){
+  var now=new Date(),day=now.getDay(),off=day===0?-6:1-day;
+  var mon=new Date(now);mon.setDate(now.getDate()+off);mon.setHours(0,0,0,0);
+  var sun=new Date(mon);sun.setDate(mon.getDate()+6);
+  var prev=c.querySelector&&c.querySelector('#mis-ws');
+  var wsVal=prev?prev.value:mon.toISOString().split('T')[0];
+  var prev2=c.querySelector&&c.querySelector('#mis-we');
+  var weVal=prev2?prev2.value:sun.toISOString().split('T')[0];
+
+  var html='<div class="card"><div class="card-title">📊 MIS Report — Weekly</div>'
+    +'<div class="form-row">'
+    +'<div class="form-group"><label class="lbl">Week Start (Monday)</label>'
+    +'<input type="date" class="inp" id="mis-ws" value="'+wsVal+'" onchange="renderMISRefresh()"/></div>'
+    +'<div class="form-group"><label class="lbl">Week End (Sunday)</label>'
+    +'<input type="date" class="inp" id="mis-we" value="'+weVal+'" onchange="renderMISRefresh()"/></div>'
+    +'</div></div>';
+
+  var ws=new Date(wsVal);ws.setHours(0,0,0,0);
+  var we=new Date(weVal);we.setHours(23,59,59,999);
+  var stepData={};
+  STEPS.forEach(function(sd){
+    var planned=0,done=0,late=0;
+    if(sd.scored){
+      S.pos.forEach(function(p){
+        if(p.status==='cancelled')return;
+        var pl=p.planned[sd.code];if(!pl)return;
+        var plDate=new Date(pl);
+        if(plDate>=ws&&plDate<=we){
+          planned++;
+          var step=p.steps[sd.code];
+          if(step&&step.done){done++;if(isLate(pl,step.actualDate))late++;}
+        }
+      });
+    }
+    var score=sd.scored&&planned>0?Math.round((done/planned*100-100)*100)/100:null;
+    stepData[sd.code]={planned,done,late,score,notDone:planned-done,scored:sd.scored};
+  });
+
+  html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:16px">';
+  ['abhishek','ajay'].forEach(function(uid){
+    var u=USERS[uid];var tp=0,td=0,tl=0;
+    STEPS.forEach(function(sd){if(!sd.scored||u.steps.indexOf(sd.code)<0)return;var d=stepData[sd.code];tp+=d.planned;td+=d.done;tl+=d.late;});
+    var combined=tp>0?Math.round((td/tp*100-100)*100)/100:null;
+    var scoreColor=combined===null||combined===0?'var(--green)':'var(--red)';
+    var scoreTxt=combined===null?'—':combined===0?'0 ✓':combined;
+    html+='<div class="card">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      +'<div class="user-avatar" style="background:'+u.color[0]+';color:'+u.color[1]+'">'+u.name.charAt(0)+'</div>'
+      +'<div class="card-title" style="margin:0">'+u.name+'</div></div>'
+      +'<div class="stats-row" style="margin-bottom:10px">'
+      +'<div class="stat-card"><div class="stat-lbl">Planned</div><div class="stat-val">'+tp+'</div></div>'
+      +'<div class="stat-card"><div class="stat-lbl">Done</div><div class="stat-val" style="color:var(--green)">'+td+'</div></div>'
+      +'<div class="stat-card"><div class="stat-lbl">Late</div><div class="stat-val" style="color:'+(tl?'var(--amber)':'var(--text2)')+'">'+tl+'</div></div>'
+      +'</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">'
+      +'<span style="font-size:12px;color:var(--text2);font-weight:600">Combined Score</span>'
+      +'<span style="font-size:20px;font-weight:700;font-family:monospace;color:'+scoreColor+'">'+scoreTxt+'</span>'
+      +'</div></div>';
+  });
+  html+='</div>';
+
+  html+='<div class="card"><div class="card-title">Step-wise Breakdown</div>'
+    +'<div style="overflow-x:auto"><table class="tbl"><thead><tr>'
+    +'<th>Step</th><th>Doer</th><th>Planned</th><th>Done</th><th>Late</th><th>Not Done</th><th>Score</th>'
+    +'</tr></thead><tbody>';
+  STEPS.forEach(function(sd){
+    var d=stepData[sd.code];
+    var scoreColor=d.score===null||d.score===0?'var(--text2)':'var(--red)';
+    var scoreTxt=!sd.scored?'<span style="font-size:11px;color:var(--text3)">Not scored</span>'
+      :d.score===null?'—':d.score===0?'<span style="color:var(--green)">0 ✓</span>'
+      :'<span style="color:'+scoreColor+';font-weight:700">'+d.score+'</span>';
+    html+='<tr><td><div style="font-weight:600">'+sd.label+'</div><div style="font-size:11px;color:var(--text3)">'+sd.how+'</div></td>'
+      +'<td>'+(USERS[sd.doer]?USERS[sd.doer].name:'—')+'</td>'
+      +(sd.scored
+        ?'<td>'+d.planned+'</td><td style="color:var(--green);font-weight:600">'+d.done+'</td>'
+         +'<td style="color:'+(d.late?'var(--amber)':'var(--text2)')+'">'+d.late+'</td>'
+         +'<td style="color:'+(d.notDone?'var(--red)':'var(--text2)')+'">'+d.notDone+'</td>'
+        :'<td colspan="4" style="color:var(--text3);font-size:11px">No planned date — not scored</td>'
+      )
+      +'<td>'+scoreTxt+'</td></tr>';
+  });
+  html+='</tbody></table></div></div>';
+  c.innerHTML=html;
+}
+function renderMISRefresh(){renderMIS(document.getElementById('main-content'));}
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN
+// ══════════════════════════════════════════════════════════════
+function renderAdmin(c){
+  var html='<div class="tabs">'
+    +'<button class="tab'+(S.adminTab==='vendors'?' active':'')+'" onclick="setAdminTab(\'vendors\')">🏢 Vendors</button>'
+    +'<button class="tab'+(S.adminTab==='data'?' active':'')+'" onclick="setAdminTab(\'data\')">🗄️ Data Management</button>'
+    +'</div>';
+  if(S.adminTab==='vendors'){
+    html+='<div class="card"><div class="card-title">Vendor List — '+S.fmsType+'</div>'
+      +'<div class="flex gap8" style="margin-bottom:14px">'
+      +'<input class="search" id="new-vendor" placeholder="New vendor name" style="flex:1"/>'
+      +'<button class="btn btn-primary" onclick="addVendor()">+ Add</button></div>';
+    S.vendors.forEach(function(v){
+      html+='<div class="flex gap8" style="padding:9px 0;border-bottom:1px solid var(--border)">'
+        +'<span style="flex:1;font-size:13px">🏢 '+esc(v)+'</span>'
+        +'<button class="btn btn-danger btn-sm" onclick="removeVendor(\''+esc(v)+'\')">Remove</button></div>';
+    });
+    html+='</div>';
+  }else{
+    html+='<div class="card"><div class="card-title">⚠️ Data Management</div>'
+      +'<div class="alert alert-warn" style="margin-bottom:14px">Deleting data is permanent. Only do this at financial year end.</div>'
+      +'<div style="font-size:13px;color:var(--text2);margin-bottom:12px">Total POs ('+S.fmsType+'): <strong>'+S.pos.length+'</strong></div>'
+      +'<button class="btn btn-danger" onclick="deleteAllData()">🗑 Delete All '+S.fmsType+' Data (FY Reset)</button></div>'
+      +'<div class="card"><div class="card-title">All PO Records</div><div style="overflow-x:auto"><table class="tbl">'
+      +'<thead><tr><th>PO No</th><th>Vendor</th><th>Ordered</th><th>Received</th><th>Lead</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+    S.pos.forEach(function(p){
+      var rcvd=(p.receivings||[]).reduce(function(a,r){return a+r.qty;},0);
+      var done=STEPS.filter(function(sd){return p.steps[sd.code]&&p.steps[sd.code].done;}).length;
+      var stBadge=p.status==='cancelled'?'<span class="badge b-red">Cancelled</span>'
+        :done===STEPS.length?'<span class="badge b-green">Complete</span>'
+        :'<span class="badge b-amber">'+done+'/'+STEPS.length+'</span>';
+      html+='<tr><td style="font-family:monospace;font-weight:700">'+esc(p.poNo)+'</td>'
+        +'<td>'+esc(p.vendor)+'</td><td>'+p.totalQty+'</td><td>'+rcvd+'</td>'
+        +'<td>'+p.leadDays+'d</td><td>'+fmtDate(p.entryDate)+'</td><td>'+stBadge+'</td></tr>';
+    });
+    html+='</tbody></table></div></div>';
+  }
+  c.innerHTML=html;
+}
+function setAdminTab(t){S.adminTab=t;render();}
+async function addVendor(){
+  var inp=document.getElementById('new-vendor');if(!inp)return;
+  var name=inp.value.trim().toUpperCase();if(!name)return;
+  try{S.vendors=await apiPost('/api/vendors',{type:S.fmsType,name});inp.value='';render();toast('Vendor added','success');}
+  catch(e){toast('Error adding vendor','danger');}
+}
+async function removeVendor(name){
+  if(!confirm('Remove vendor: '+name+'?'))return;
+  try{S.vendors=await apiDelete('/api/vendors',{type:S.fmsType,name});render();toast('Vendor removed','success');}
+  catch(e){toast('Error removing vendor','danger');}
+}
+async function deleteAllData(){
+  if(!confirm('DELETE ALL '+S.fmsType+' data? This cannot be undone.'))return;
+  try{
+    await apiDelete('/api/pos/type/'+S.fmsType);
+    toast('All '+S.fmsType+' data deleted','success');await loadData(false);
+  }catch(e){toast('Error deleting data','danger');}
+}
+
+// ══════════════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════════════
+buildUserCards();
+loadLocal();
+if(S.user){showApp();}
+</script>
+</body>
+</html>
