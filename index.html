@@ -344,45 +344,115 @@ function saveLocal(){try{localStorage.setItem('fms_u',S.user||'');localStorage.s
 function loadLocal(){try{S.user=localStorage.getItem('fms_u')||null;S.fmsType=localStorage.getItem('fms_t')||'COLOR';}catch(e){}}
 
 // ══════════════════════════════════════════════════════════════
-// API
+// SUPABASE DIRECT — bypasses Vercel API, calls Supabase instantly
 // ══════════════════════════════════════════════════════════════
-function apiFetch(method,url,body){
-  setSyncing(true);
-  var opts={method:method,headers:{'Content-Type':'application/json'}};
-  if(body)opts.body=JSON.stringify(body);
-  return fetch(API+url,opts)
-    .then(function(r){setSyncing(false);if(!r.ok)throw new Error(r.status);return r.json();})
-    .catch(function(e){setSyncError();throw e;});
+var SB_URL = 'https://rqokafvrlkpwmwwctcta.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxb2thZnZybGtwd213d2N0Y3RhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3OTkzNzczOCwiZXhwIjoyMDk1NTEzNzM4fQ.vnxNaQhp6-PSC1-82dv_hHIMFSpeFT45SjJ1-HpH7sE';
+
+function sbFetch(method, path, body) {
+  return fetch(SB_URL + '/rest/v1/' + path, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Prefer': method === 'POST' ? 'return=representation' : (method === 'PATCH' ? 'return=representation' : '')
+    },
+    body: body ? JSON.stringify(body) : undefined
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    if (r.status === 204) return null;
+    return r.json();
+  });
 }
-function apiGet(u){return apiFetch('GET',u);}
-function apiPost(u,b){return apiFetch('POST',u,b);}
-function apiPatch(u,b){return apiFetch('PATCH',u,b);}
-function apiDelete(u,b){return apiFetch('DELETE',u,b);}
 
 // Map DB row to frontend PO object
 function mapPO(r){
   return{
-    id:r.id,type:r.type,poNo:r.po_no,vendor:r.vendor,
-    totalQty:r.total_qty,leadDays:r.lead_days,
-    entryDate:r.entry_date,entryBy:r.entry_by,
-    status:r.status,planned:r.planned||{},
-    steps:r.steps||{},receivings:r.receivings||[],
-    cancelledQty:r.cancelled_qty||0,cancelRemark:r.cancel_remark||''
+    id:r.id, type:r.type, poNo:r.po_no, vendor:r.vendor,
+    totalQty:r.total_qty, leadDays:r.lead_days,
+    entryDate:r.entry_date, entryBy:r.entry_by,
+    status:r.status, planned:r.planned||{},
+    steps:r.steps||{}, receivings:r.receivings||[],
+    cancelledQty:r.cancelled_qty||0, cancelRemark:r.cancel_remark||''
   };
 }
 
-async function loadData(silent){
-  try{
-    var[rows,vendors]=await Promise.all([
-      apiGet('/api/pos?type='+S.fmsType),
-      apiGet('/api/vendors?type='+S.fmsType)
+async function loadData(silent) {
+  try {
+    setSyncing(true);
+    var [rows, vrows] = await Promise.all([
+      sbFetch('GET', 'pos?type=eq.' + S.fmsType + '&order=created_at.desc'),
+      sbFetch('GET', 'vendors?type=eq.' + S.fmsType + '&order=name.asc&select=name')
     ]);
-    S.pos=rows.map(mapPO);
-    S.vendors=vendors;
-    if(!silent)render();
-    else renderSilent();
+    S.pos     = rows.map(mapPO);
+    S.vendors = vrows.map(function(r) { return r.name; });
     setSynced();
-  }catch(e){setSyncError();}
+    if (!silent) render(); else renderSilent();
+  } catch(e) { setSyncError(); console.error(e); }
+}
+
+async function autoSync() {
+  try {
+    var [rows, vrows] = await Promise.all([
+      sbFetch('GET', 'pos?type=eq.' + S.fmsType + '&order=created_at.desc'),
+      sbFetch('GET', 'vendors?type=eq.' + S.fmsType + '&order=name.asc&select=name')
+    ]);
+    S.pos     = rows.map(mapPO);
+    S.vendors = vrows.map(function(r) { return r.name; });
+    setSynced();
+    renderSilent();
+  } catch(e) { setSyncError(); }
+}
+
+async function dbCreatePO(po) {
+  setSyncing(true);
+  var r = await sbFetch('POST', 'pos', {
+    type: po.type, po_no: po.poNo, vendor: po.vendor,
+    total_qty: po.totalQty, lead_days: po.leadDays,
+    entry_date: po.entryDate, entry_by: po.entryBy,
+    status: 'active', planned: po.planned, steps: po.steps,
+    receivings: po.receivings, cancelled_qty: 0, cancel_remark: ''
+  });
+  return r[0];
+}
+
+async function dbUpdatePO(id, patch) {
+  setSyncing(true);
+  var dbPatch = {};
+  if (patch.poNo         !== undefined) dbPatch.po_no         = patch.poNo;
+  if (patch.vendor       !== undefined) dbPatch.vendor        = patch.vendor;
+  if (patch.totalQty     !== undefined) dbPatch.total_qty     = patch.totalQty;
+  if (patch.leadDays     !== undefined) dbPatch.lead_days     = patch.leadDays;
+  if (patch.status       !== undefined) dbPatch.status        = patch.status;
+  if (patch.planned      !== undefined) dbPatch.planned       = patch.planned;
+  if (patch.steps        !== undefined) dbPatch.steps         = patch.steps;
+  if (patch.receivings   !== undefined) dbPatch.receivings    = patch.receivings;
+  if (patch.cancelledQty !== undefined) dbPatch.cancelled_qty = patch.cancelledQty;
+  if (patch.cancelRemark !== undefined) dbPatch.cancel_remark = patch.cancelRemark;
+  await sbFetch('PATCH', 'pos?id=eq.' + id, dbPatch);
+}
+
+async function dbDeletePO(id) {
+  setSyncing(true);
+  await sbFetch('DELETE', 'pos?id=eq.' + id);
+}
+
+async function dbDeleteAllPOs(type) {
+  setSyncing(true);
+  await sbFetch('DELETE', 'pos?type=eq.' + type);
+}
+
+async function dbAddVendor(type, name) {
+  await sbFetch('POST', 'vendors', { type, name });
+  var vrows = await sbFetch('GET', 'vendors?type=eq.' + type + '&order=name.asc&select=name');
+  return vrows.map(function(r) { return r.name; });
+}
+
+async function dbRemoveVendor(type, name) {
+  await sbFetch('DELETE', 'vendors?type=eq.' + type + '&name=eq.' + encodeURIComponent(name));
+  var vrows = await sbFetch('GET', 'vendors?type=eq.' + type + '&order=name.asc&select=name');
+  return vrows.map(function(r) { return r.name; });
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -407,19 +477,6 @@ function setSyncError(){
   if(txt)txt.textContent='Sync failed';
 }
 
-// Silent auto-sync — updates data without blanking the screen
-async function autoSync(){
-  try{
-    var[rows,vendors]=await Promise.all([
-      fetch(API+'/api/pos?type='+S.fmsType).then(r=>r.json()),
-      fetch(API+'/api/vendors?type='+S.fmsType).then(r=>r.json())
-    ]);
-    S.pos=rows.map(mapPO);
-    S.vendors=vendors;
-    setSynced();
-    renderSilent();
-  }catch(e){setSyncError();}
-}
 
 // renderSilent: re-renders only the PO cards without touching filters/search inputs
 function renderSilent(){
@@ -805,9 +862,9 @@ async function submitPO(){
   var steps={};
   STEPS.forEach(function(sd){steps[sd.code]={done:false,actualDate:null,remarks:'',checklistAnswers:{}};});
   try{
-    await apiPost('/api/pos',{type:S.fmsType,poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,
+    await dbCreatePO({type:S.fmsType,poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,
       entryDate:now,entryBy:S.user,planned,steps,receivings:[],cancelledQty:0,cancelRemark:''});
-    closeModal();toast('PO created successfully','success');
+    closeModal();toast('PO created successfully ✓','success');
     await loadData(false);
   }catch(e){toast('Error creating PO','danger');}
 }
@@ -887,7 +944,7 @@ async function submitMarkDone(){
     updated.steps[sc]={done:true,actualDate:now,remarks,checklistAnswers:isStore?_md.checklist:{}};
   }
   try{
-    await apiPatch('/api/pos/'+po.id,{steps:updated.steps,planned:updated.planned,receivings:updated.receivings});
+    await dbUpdatePO(po.id,{steps:updated.steps,planned:updated.planned,receivings:updated.receivings});
     closeModal();toast('Step marked as done ✓','success');
     await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
@@ -909,7 +966,7 @@ function openCancel(poId){
 async function confirmCancel(poId){
   var remark=(document.getElementById('cancel-remark')||{}).value||'';
   try{
-    await apiPatch('/api/pos/'+poId,{status:'cancelled',cancelRemark:remark});
+    await dbUpdatePO(poId,{status:'cancelled',cancelRemark:remark});
     closeModal();toast('PO cancelled','success');await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
 }
@@ -945,7 +1002,7 @@ async function confirmPartialCancel(poId,maxQty){
     update.planned={...po.planned,'5':pd['5'],'6':pd['6']};
   }
   try{
-    await apiPatch('/api/pos/'+poId,update);
+    await dbUpdatePO(poId,update);
     closeModal();toast(qty+' units marked as cancelled','success');await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
 }
@@ -975,7 +1032,7 @@ async function submitEditPO(poId){
   if(!poNo.trim()||!vendor||!qty||!lead){toast('All fields are required','danger');return;}
   var planned=lead!==po.leadDays?calcPlanned(po.entryDate,lead):po.planned;
   try{
-    await apiPatch('/api/pos/'+poId,{poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,planned});
+    await dbUpdatePO(poId,{poNo:poNo.trim(),vendor,totalQty:qty,leadDays:lead,planned});
     closeModal();toast('PO updated','success');await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
 }
@@ -984,7 +1041,7 @@ async function deletePO(poId){
   var po=S.pos.find(function(p){return p.id===poId;});if(!po)return;
   if(!confirm('Permanently DELETE PO #'+po.poNo+'? This cannot be undone.'))return;
   try{
-    await apiDelete('/api/pos/'+poId);
+    await dbDeletePO(poId);
     toast('PO deleted','success');await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
 }
@@ -997,7 +1054,7 @@ async function undoMarkDone(poId,stepCode){
   var newPlanned={...po.planned};
   if(stepCode==='3'){newPlanned['5']=null;newPlanned['6']=null;}
   try{
-    await apiPatch('/api/pos/'+poId,{steps:newSteps,planned:newPlanned});
+    await dbUpdatePO(poId,{steps:newSteps,planned:newPlanned});
     toast('Step reset to pending','success');await loadData(false);
   }catch(e){toast('Error — check connection','danger');}
 }
@@ -1135,18 +1192,18 @@ function setAdminTab(t){S.adminTab=t;render();}
 async function addVendor(){
   var inp=document.getElementById('new-vendor');if(!inp)return;
   var name=inp.value.trim().toUpperCase();if(!name)return;
-  try{S.vendors=await apiPost('/api/vendors',{type:S.fmsType,name});inp.value='';render();toast('Vendor added','success');}
+  try{S.vendors=await dbAddVendor(S.fmsType,name);inp.value='';render();toast('Vendor added','success');}
   catch(e){toast('Error adding vendor','danger');}
 }
 async function removeVendor(name){
   if(!confirm('Remove vendor: '+name+'?'))return;
-  try{S.vendors=await apiDelete('/api/vendors',{type:S.fmsType,name});render();toast('Vendor removed','success');}
+  try{S.vendors=await dbRemoveVendor(S.fmsType,name);render();toast('Vendor removed','success');}
   catch(e){toast('Error removing vendor','danger');}
 }
 async function deleteAllData(){
   if(!confirm('DELETE ALL '+S.fmsType+' data? This cannot be undone.'))return;
   try{
-    await apiDelete('/api/pos/type/'+S.fmsType);
+    await dbDeleteAllPOs(S.fmsType);
     toast('All '+S.fmsType+' data deleted','success');await loadData(false);
   }catch(e){toast('Error deleting data','danger');}
 }
